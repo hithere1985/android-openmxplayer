@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/Users/theisen/Projects/android-openmxplayer/openMXPlayer/build/intermediates/bundles/default/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="defbfd91ef1dbe0c0295336f5394ab28946bf12f">
+        <dex dex="/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/build/intermediates/pre-dexed/debug/classes_ec65249adc0a15d1b1d2f5e345dc62b71083e684.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/theisen/Projects/android-sdk-macosx/extras/android/m2repository/com/android/support/support-v4/18.0.0/support-v4-18.0.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="44ec51e9d395a47aab135e5e1b556c0007442156">
+        <dex dex="/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/build/intermediates/pre-dexed/debug/support-v4-18.0.0_cd1355035100b842b28003c75669b504154daba6.jar" />
+    </item>
+
+</items>
