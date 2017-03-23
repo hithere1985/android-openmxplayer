@@ -4,11 +4,23 @@
         "source": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/sampleaac.m4p"
     },
     {
+        "merged": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/raw/samplewma.wma",
+        "source": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/samplewma.wma"
+    },
+    {
         "merged": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/raw/samplewma.wma",
         "source": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/samplewma.wma"
     },
     {
+        "merged": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/raw/samplemp3.mp3",
+        "source": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/samplemp3.mp3"
+    },
+    {
         "merged": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/raw/samplemp3.mp3",
         "source": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/samplemp3.mp3"
+    },
+    {
+        "merged": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/raw/sampleaac.m4p",
+        "source": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/main/res/raw/sampleaac.m4p"
     }
 ]

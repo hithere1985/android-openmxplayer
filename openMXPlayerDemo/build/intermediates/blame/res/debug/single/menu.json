@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/menu/main.xml",
+        "source": "/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/main/res/menu/main.xml"
+    },
+    {
         "merged": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/build/intermediates/res/merged/debug/menu/main.xml",
         "source": "/Users/theisen/Projects/android-openmxplayer/openMXPlayerDemo/src/main/res/menu/main.xml"
     }
