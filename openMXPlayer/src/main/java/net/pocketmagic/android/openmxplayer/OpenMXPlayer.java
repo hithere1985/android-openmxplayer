@@ -18,9 +18,6 @@ package net.pocketmagic.android.openmxplayer;
 ** You should have received a copy of the GNU Lesser General Public License
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-import java.io.FileDescriptor;
-import java.nio.ByteBuffer;
-
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioFormat;
@@ -33,6 +30,9 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.os.Handler;
 import android.util.Log;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class OpenMXPlayer implements Runnable {
 	public final String LOG_TAG = "OpenMXPlayer";
@@ -177,11 +177,12 @@ public class OpenMXPlayer implements Runnable {
 			return;
         }
         // create the actual decoder, using the mime to select
-        codec = MediaCodec.createDecoderByType(mime);
-        // check we have a valid codec instance
-        if (codec == null) {
-        	if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } }); 
-			return;
+        try {
+            codec = MediaCodec.createDecoderByType(mime);
+        } catch (IOException e) {
+            e.printStackTrace();
+            handler.post(new Runnable() { @Override public void run() { events.onError();  } });
+            return;
         }
         
         //state.set(PlayerStates.READY_TO_PLAY);

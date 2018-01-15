@@ -3,8 +3,8 @@
     package="net.pocketmagic.android.openmxplayer.test" >
 
     <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="16" />
+        android:minSdkVersion="21"
+        android:targetSdkVersion="26" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
@@ -13,7 +13,7 @@
         android:label="Tests for net.pocketmagic.android.openmxplayer.test"
         android:targetPackage="net.pocketmagic.android.openmxplayer.test" />
 
-    <application>
+    <application android:debuggable="true" >
         <uses-library android:name="android.test.runner" />
     </application>
 

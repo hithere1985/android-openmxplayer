@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/src/debug/shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="C:\Users\realo\work\android-openmxplayer\openMXPlayerDemo\src\main\shaders"/></dataSet><dataSet config="debug"><source path="C:\Users\realo\work\android-openmxplayer\openMXPlayerDemo\src\debug\shaders"/></dataSet></merger>
