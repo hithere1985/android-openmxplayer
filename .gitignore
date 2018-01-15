@@ -1,3 +1,6 @@
 build
-build/
+
+openMXPlayerDemo/build/
+
+gradle/
 .idea/workspace.xml

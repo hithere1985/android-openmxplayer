@@ -1,4 +1,0 @@
-#Thu Mar 23 14:09:45 CET 2017
-base.0=/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/transforms/dex/debug/folders/1000/1f/main
-renamed.0=classes.dex
-file.0=/Users/theisen/Projects/Work/android-openmxplayer/openMXPlayerDemo/build/intermediates/transforms/dex/debug/folders/1000/1f/main/classes.dex
