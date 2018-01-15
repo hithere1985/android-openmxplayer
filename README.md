@@ -1,3 +1,5 @@
+OpenMXPlayer Audio player for Android
+=============
 
 OpenMXPlayer Audio player for Android
 http://www.pocketmagic.net
@@ -11,7 +13,7 @@ COPYRIGHTS
 ==========
 
 For this software the following license applies:
-
+<pre><code>
 ******************************************************************************
 ** OpenMXPlayer - Audio player for Android
 ** Copyright (C) 2009 - 2014 Radu Motisan, radu.motisan@gmail.com
@@ -31,7 +33,7 @@ For this software the following license applies:
 ** You should have received a copy of the GNU Lesser General Public License
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************
-
+</code></pre>
 
 OVERVIEW
 ========
