@@ -34,6 +34,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@SuppressWarnings("deprecation")
 public class OpenMXPlayer implements Runnable {
 	public final String LOG_TAG = "OpenMXPlayer";
 	
