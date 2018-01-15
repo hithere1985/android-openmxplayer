@@ -9,6 +9,13 @@ The source code can be obtained at http://code.google.com/p/openmxplayer-android
 This is a port of the "OpenMXPlayer" open source library to Android platform.
 
 
+New Features
+==========
+```
+1. Add loop mode
+2. Add external duration (fake play)
+```
+
 COPYRIGHTS
 ==========
 
