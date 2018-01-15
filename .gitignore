@@ -1,8 +1,17 @@
+# Android Studio captures folder
+captures/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
 build
 
-openMXPlayerDemo/build/
-
-.gradle/
-build/
-
+*.iml
+.gradle
 .idea/workspace.xml
+.idea/libraries
+.idea/runConfigurations.xml
+.DS_Store
+/captures
+.externalNativeBuild
+
