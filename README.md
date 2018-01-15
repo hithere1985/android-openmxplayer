@@ -11,12 +11,12 @@ This is a port of the "OpenMXPlayer" open source library to Android platform.
 
 New Features
 ==========
-```
-[x] Update project for Android Studio 3.0
-[x] update sdk library
-[ ] Add loop mode
-[ ] Add external duration (fake play)
-```
+
+- [x] Update project for Android Studio 3.0
+- [x] Update android sdk library
+- [ ] Add loop mode
+- [ ] Add external duration (fake play)
+
 
 COPYRIGHTS
 ==========
