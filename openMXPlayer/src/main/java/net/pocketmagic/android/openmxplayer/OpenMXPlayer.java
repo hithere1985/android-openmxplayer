@@ -56,7 +56,7 @@ public class OpenMXPlayer implements Runnable {
     String mime = null;
     int sampleRate = 0, channels = 0, bitrate = 0;
     long presentationTimeUs = 0, duration = 0;
-    long targetDuration = 10575510;
+    long fakeDuration = 0;
 
     public void setEventsListener(PlayerEvents events) {
         this.events = events;
@@ -81,6 +81,10 @@ public class OpenMXPlayer implements Runnable {
 
     public void setLoop(boolean loop) {
         this.loop = loop;
+    }
+
+    public void setFakeDuration(long fakeDuration) {
+        this.fakeDuration = fakeDuration;
     }
 
     /**
@@ -126,9 +130,17 @@ public class OpenMXPlayer implements Runnable {
         state.set(PlayerStates.READY_TO_PLAY);
     }
 
+    public long getPosition() {
+        return presentationTimeUs / 1000;
+    }
+
     long seekPos;
 
+    /**
+     * @param pos seek to pos, pos is milliseconds
+     */
     public void seek(long pos) {
+        pos *= 1000;
         if (pos > duration) {
             extractor.seekTo(pos, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
             seekPos = pos;
@@ -139,8 +151,8 @@ public class OpenMXPlayer implements Runnable {
         extractor.seekTo(pos, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
     }
 
-    public void seek(int percent) {
-        long pos = percent * duration / 100;
+    public void seek(float percent) {
+        long pos = (long) (percent * getRealDuration() / 100);
         seek(pos);
     }
 
@@ -158,8 +170,18 @@ public class OpenMXPlayer implements Runnable {
         }
     }
 
+    /**
+     * @return return duration value as us
+     */
+    private long getRealDuration() {
+        return fakeDuration != 0 ? fakeDuration : duration;
+    }
+
+    /**
+     * @return return duration value as ms
+     */
     public long getDuration() {
-        return targetDuration != 0 ? targetDuration : duration;
+        return getRealDuration() / 1000;
     }
 
     @Override
@@ -262,7 +284,7 @@ public class OpenMXPlayer implements Runnable {
         int noOutputCounter = 0;
         int noOutputCounterLimit = 10;
 
-        final long duration = getDuration();
+        final long duration = getRealDuration();
         long tick = System.nanoTime();
         state.set(PlayerStates.PLAYING);
         while (!state.isStopped()) {

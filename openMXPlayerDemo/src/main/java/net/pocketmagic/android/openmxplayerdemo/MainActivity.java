@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
                     Toast.makeText(getActivity(), "This is a LIVE Stream!", Toast.LENGTH_SHORT).show();
                 else
                     Toast.makeText(getActivity(), "This is a RECORDING!", Toast.LENGTH_SHORT).show();
-                seekbar.setMax((int) duration / 1000);
+                seekbar.setMax((int) duration);
                 tv.setText("Playing content:" + mime + " " + sampleRate + "Hz " + (duration / 1000) + "ms");
             }
 
@@ -138,7 +138,7 @@ public class MainActivity extends Activity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) player.seek((long)progress * 1000);
+                    if (fromUser) player.seek((long)progress);
                 }
             });
 
