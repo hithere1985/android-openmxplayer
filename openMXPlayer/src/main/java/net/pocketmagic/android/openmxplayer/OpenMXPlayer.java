@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 
 @SuppressWarnings("deprecation")
 public class OpenMXPlayer implements Runnable {
-    public final String LOG_TAG = "OpenMXPlayer";
+    public final String TAG = "OpenMXPlayer";
 
     private MediaExtractor extractor;
     private MediaCodec codec;
@@ -56,6 +56,7 @@ public class OpenMXPlayer implements Runnable {
     String mime = null;
     int sampleRate = 0, channels = 0, bitrate = 0;
     long presentationTimeUs = 0, duration = 0;
+    long targetDuration = 10575510;
 
     public void setEventsListener(PlayerEvents events) {
         this.events = events;
@@ -145,6 +146,10 @@ public class OpenMXPlayer implements Runnable {
         }
     }
 
+    public long getDuration() {
+        return targetDuration != 0 ? targetDuration : duration;
+    }
+
     @Override
     public void run() {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
@@ -160,7 +165,7 @@ public class OpenMXPlayer implements Runnable {
                 fd.close();
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "exception:" + e.getMessage());
+            Log.e(TAG, "exception:" + e.getMessage());
             if (events != null) handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -180,15 +185,17 @@ public class OpenMXPlayer implements Runnable {
             // if duration is 0, we are probably playing a live stream
             duration = format.getLong(MediaFormat.KEY_DURATION);
             bitrate = format.getInteger(MediaFormat.KEY_BIT_RATE);
+
+            Log.d(TAG, "duration: " + duration);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Reading format parameters exception:" + e.getMessage());
+            Log.e(TAG, "Reading format parameters exception:" + e.getMessage());
             // don't exit, tolerate this error, we'll fail later if this is critical
         }
-        Log.d(LOG_TAG, "Track info: mime:" + mime + " sampleRate:" + sampleRate + " channels:" + channels + " bitrate:" + bitrate + " duration:" + duration);
+        Log.d(TAG, "Track info: mime:" + mime + " sampleRate:" + sampleRate + " channels:" + channels + " bitrate:" + bitrate + " duration:" + duration);
 
         // check we have audio content we know
         if (format == null || !mime.startsWith("audio/")) {
-            Log.e(LOG_TAG, "format error");
+            Log.e(TAG, "format error");
             if (events != null) handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -202,7 +209,7 @@ public class OpenMXPlayer implements Runnable {
             codec = MediaCodec.createDecoderByType(mime);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(LOG_TAG, "createDecoderByType error: " + e.getMessage());
+            Log.e(TAG, "createDecoderByType error: " + e.getMessage());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -216,7 +223,7 @@ public class OpenMXPlayer implements Runnable {
         if (events != null) handler.post(new Runnable() {
             @Override
             public void run() {
-                events.onStart(mime, sampleRate, channels, duration);
+                events.onStart(mime, sampleRate, channels, getDuration());
             }
         });
 
@@ -243,6 +250,8 @@ public class OpenMXPlayer implements Runnable {
         int noOutputCounter = 0;
         int noOutputCounterLimit = 10;
 
+        final long duration = getDuration();
+        long tick = System.nanoTime();
         state.set(PlayerStates.PLAYING);
         while (!state.isStopped()) {
             while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !stop) {
@@ -257,11 +266,12 @@ public class OpenMXPlayer implements Runnable {
                         ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
                         int sampleSize = extractor.readSampleData(dstBuf, 0);
                         if (sampleSize < 0) {
-                            Log.d(LOG_TAG, "saw input EOS. Stopping playback");
+                            Log.d(TAG, "saw input EOS. Stopping playback");
                             sawInputEOS = true;
                             sampleSize = 0;
                         } else {
                             presentationTimeUs = extractor.getSampleTime();
+                            tick = System.nanoTime() / 1000 - presentationTimeUs;
                             final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
                             if (events != null) handler.post(new Runnable() {
                                 @Override
@@ -274,9 +284,9 @@ public class OpenMXPlayer implements Runnable {
                         codec.queueInputBuffer(inputBufIndex, 0, sampleSize, presentationTimeUs, flags);
                         if (!sawInputEOS) extractor.advance();
                     } else {
-                        Log.e(LOG_TAG, "inputBufIndex " + inputBufIndex);
+                        Log.e(TAG, "inputBufIndex " + inputBufIndex);
                     }
-                } // !sawInputEOS
+                }
 
                 // decode to PCM and push it to the AudioTrack player
                 int res = codec.dequeueOutputBuffer(info, kTimeOutUs);
@@ -295,33 +305,57 @@ public class OpenMXPlayer implements Runnable {
                     }
                     codec.releaseOutputBuffer(outputBufIndex, false);
                     if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                        Log.d(LOG_TAG, "saw output EOS.");
+                        Log.d(TAG, "saw output EOS.");
                         sawOutputEOS = true;
                     }
                 } else if (res == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                     codecOutputBuffers = codec.getOutputBuffers();
-                    Log.d(LOG_TAG, "output buffers have changed.");
+                    Log.d(TAG, "output buffers have changed.");
                 } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat oformat = codec.getOutputFormat();
-                    Log.d(LOG_TAG, "output format has changed to " + oformat);
+                    Log.d(TAG, "output format has changed to " + oformat);
                 } else {
-                    Log.d(LOG_TAG, "dequeueOutputBuffer returned " + res);
+                    Log.d(TAG, "dequeueOutputBuffer returned " + res);
                 }
             }
 
-            if (stop || !loop) {
-                Log.d(LOG_TAG, "stop request");
+            if (stop) {
+                Log.d(TAG, "stop request");
                 break;
             }
 
-            waitPlay();
-            sawOutputEOS = false;
-            sawInputEOS = false;
-            noOutputCounter = 0;
-            seek(0L);
+            if (sawInputEOS && presentationTimeUs < duration) {
+                presentationTimeUs = System.nanoTime() / 1000 - tick;
+                Log.d(TAG, "presentationTimeUs: " + presentationTimeUs);
+                final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
+                if (events != null) handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        events.onPlayUpdate(percent, presentationTimeUs / 1000, duration / 1000);
+                    }
+                });
+
+                long pauseStart = System.nanoTime();
+                waitPlay();
+                tick += (System.nanoTime() - pauseStart) / 1000;
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+
+            if (loop) {
+                waitPlay();
+                sawOutputEOS = false;
+                sawInputEOS = false;
+                noOutputCounter = 0;
+                seek(0L);
+            }
         }
 
-        Log.d(LOG_TAG, "stopping...");
+        Log.d(TAG, "stopping...");
 
         if (codec != null) {
             codec.stop();
@@ -335,33 +369,22 @@ public class OpenMXPlayer implements Runnable {
         }
 
         // clear source and the other globals
-        duration = 0;
         mime = null;
         sampleRate = 0;
         channels = 0;
         bitrate = 0;
         presentationTimeUs = 0;
-        duration = 0;
+        this.duration = 0;
 
         state.set(PlayerStates.STOPPED);
         stop = true;
 
-        if (noOutputCounter >= noOutputCounterLimit) {
-            Log.e(LOG_TAG, "noOutputCounter >= noOutputCounterLimit");
-            if (events != null) handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    events.onError();
-                }
-            });
-        } else {
-            if (events != null) handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    events.onStop();
-                }
-            });
-        }
+        if (events != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                events.onStop();
+            }
+        });
     }
 
     public static String listCodecs() {
