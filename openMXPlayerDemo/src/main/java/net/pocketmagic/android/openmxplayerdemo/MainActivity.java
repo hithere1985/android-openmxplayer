@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -91,6 +90,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPlayUpdate(int percent, long currentms, long totalms) {
+                Log.d("Main", "onPlayUpdate() called with: percent = [" + percent + "], currentms = [" + currentms + "], totalms = [" + totalms + "]");
                 seekbar.setProgress(percent);
             }
 
@@ -106,26 +106,26 @@ public class MainActivity extends Activity {
             }
         };
 
-        OpenMXPlayer p = new OpenMXPlayer(events);
-
+        OpenMXPlayer player = new OpenMXPlayer(events);
 
         public PlaceholderFragment() {
+            player.setLoop(true);
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             // set listeners on buttons
-            ((Button) rootView.findViewById(R.id.idbut1)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut2a)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut2b)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut2c)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut3)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut4)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut5)).setOnClickListener((OnClickListener) this);
-            ((Button) rootView.findViewById(R.id.idbut6)).setOnClickListener((OnClickListener) this);
+            rootView.findViewById(R.id.idbut1).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut2a).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut2b).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut2c).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut3).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut4).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut5).setOnClickListener(this);
+            rootView.findViewById(R.id.idbut6).setOnClickListener(this);
 
-            seekbar = (SeekBar) rootView.findViewById(R.id.seekbar);
+            seekbar = rootView.findViewById(R.id.seekbar);
             seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
@@ -137,12 +137,12 @@ public class MainActivity extends Activity {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) p.seek(progress);
+                    if (fromUser) player.seek(progress);
                 }
             });
 
-            et = (EditText) rootView.findViewById(R.id.idet1);
-            tv = (TextView) rootView.findViewById(R.id.idtv1);
+            et = rootView.findViewById(R.id.idet1);
+            tv = rootView.findViewById(R.id.idtv1);
 
             return rootView;
         }
@@ -156,41 +156,39 @@ public class MainActivity extends Activity {
                     break;
                 case R.id.idbut2a: {
                     Log.d(LOG_TAG, "Load an audio file from resources.");
-                    p.setDataSource(getActivity(), R.raw.samplemp3);
+                    player.setDataSource(getActivity(), R.raw.samplemp3);
                     Toast.makeText(getActivity(), "Now press play!", Toast.LENGTH_SHORT).show();
                 }
                 break;
                 case R.id.idbut2b: {
                     Log.d(LOG_TAG, "Load an audio file from resources.");
-                    p.setDataSource(getActivity(), R.raw.sampleaac);
+                    player.setDataSource(getActivity(), R.raw.sampleaac);
                     Toast.makeText(getActivity(), "Now press play!", Toast.LENGTH_SHORT).show();
                 }
                 break;
                 case R.id.idbut2c: {
                     Log.d(LOG_TAG, "Load an audio file from resources.");
-                    p.setDataSource(getActivity(), R.raw.samplewma);
+                    player.setDataSource(getActivity(), R.raw.samplewma);
                     Toast.makeText(getActivity(), "Now press play!", Toast.LENGTH_SHORT).show();
                 }
                 break;
                 case R.id.idbut3:
                     Log.d(LOG_TAG, "Load an audio file from given location.");
-                    p.setDataSource(et.getText().toString());
+                    player.setDataSource(et.getText().toString());
                     Toast.makeText(getActivity(), "Now press play!", Toast.LENGTH_SHORT).show();
                     break;
                 case R.id.idbut4:
                     Log.d(LOG_TAG, "Start playing!");
-                    p.play();
+                    player.play();
                     break;
                 case R.id.idbut5:
                     Log.d(LOG_TAG, "Pause.");
-                    p.pause();
+                    player.pause();
                     break;
                 case R.id.idbut6:
                     Log.d(LOG_TAG, "Stop.");
-                    p.stop();
+                    player.stop();
                     break;
-
-
             }
         }
     }
