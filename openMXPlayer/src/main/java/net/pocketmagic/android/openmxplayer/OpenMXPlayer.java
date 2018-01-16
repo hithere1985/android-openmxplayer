@@ -97,6 +97,8 @@ public class OpenMXPlayer implements Runnable {
         sourceRawResId = resid;
     }
 
+    private boolean resetEOS;
+
     public void play() {
         if (state.get() == PlayerStates.STOPPED) {
             stop = false;
@@ -104,6 +106,7 @@ public class OpenMXPlayer implements Runnable {
         }
         if (state.get() == PlayerStates.READY_TO_PLAY) {
             state.set(PlayerStates.PLAYING);
+            resetEOS = true;
             syncNotify();
         }
     }
@@ -123,7 +126,16 @@ public class OpenMXPlayer implements Runnable {
         state.set(PlayerStates.READY_TO_PLAY);
     }
 
+    long seekPos;
+
     public void seek(long pos) {
+        if (pos > duration) {
+            extractor.seekTo(pos, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            seekPos = pos;
+            return;
+        }
+        seekPos = 0;
+        resetEOS = true;
         extractor.seekTo(pos, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
     }
 
@@ -254,6 +266,12 @@ public class OpenMXPlayer implements Runnable {
         long tick = System.nanoTime();
         state.set(PlayerStates.PLAYING);
         while (!state.isStopped()) {
+            if (resetEOS) {
+                sawInputEOS = false;
+                sawOutputEOS = false;
+                noOutputCounter = 0;
+                resetEOS = false;
+            }
             while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !stop) {
                 // pause implementation
                 waitPlay();
@@ -322,6 +340,12 @@ public class OpenMXPlayer implements Runnable {
             if (stop) {
                 Log.d(TAG, "stop request");
                 break;
+            }
+
+            if (seekPos > 0) {
+                presentationTimeUs = seekPos;
+                tick = System.nanoTime() / 1000 - presentationTimeUs;
+                seekPos = 0;
             }
 
             if (sawInputEOS && presentationTimeUs < duration) {
